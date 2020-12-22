@@ -1,0 +1,69 @@
+//1. include header files
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#define max_lim 100
+
+void swap(char *x, char *y){
+    char temp;
+    temp = *x;
+    *x = *y;
+    *y = temp;
+}
+void perm(char *a,int l,int r){
+	int i;
+	if(l==r) printf("%s\n",a);
+	else{
+		for(i=l;i<=r;i++){
+			swap((a + l), (a + i));
+			perm(a, l + 1, r);
+			swap((a + l), (a + i));
+		}
+	}
+}
+
+int main(){
+	int s,r,recb,sntb,x;
+	int ca;
+	printf("INPUT port number:");
+	scanf("%d",&x);
+	socklen_t len;
+	struct sockaddr_in server,client;
+	char buff[max_lim];
+	
+	//2. create socket
+	s=socket(AF_INET,SOCK_DGRAM,0);
+	if(s==-1){printf("\nSocket creation error.");exit(0);}
+	printf("\nSocket created.");
+	
+	//3. assign values to server
+	server.sin_family=AF_INET;
+	server.sin_addr.s_addr=htonl(INADDR_ANY);
+	server.sin_port=htons(x);
+	len=sizeof(client);
+	ca=sizeof(client);
+	
+	//4. bind address to socket
+	r=bind(s,(struct sockaddr*)&server,sizeof(server));
+	if(r==-1){printf("\nBinding error.");exit(0);}
+	printf("\nSocket binded.");
+	
+	//5. inside loop,recive msg from client
+	while(1){
+	
+		//recieve
+		recb=recvfrom(s,buff,sizeof(buff),0,(struct sockaddr*)&client,&ca);
+		if(recb==-1){printf("\nMessage Recieving Failed");close(s); exit(0);}
+		printf("\n\nRecieved string: %s\n",buff);
+		if(!strcmp(buff,"stop")) break;
+		int n=strlen(buff);
+		printf("Possible Permutation:\n");
+		perm(buff,0,n-1);
+	}
+	close(s);
+}
