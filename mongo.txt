@@ -1,0 +1,30 @@
+Insert 5 tuples into inventory with the following attributes
+
+Items
+
+Qty
+
+Tags(as array type)
+
+Size{h, w,uom}
+
+Q1. Find all documents whose qty is greater than 100 but less than 200
+
+Q2. Find all documents whose uom is cm
+
+Q3. Find all documents that contains red and black tags
+
+db.createCollection(inventory,{autoIndexID : true});
+
+
+db.inventory.insertMany([
+    {item:"journal",qty: 25,tags:["black","red"],size:{h:14,w:21,uom:"cm"}},
+    {item:"mat",qty: 150,tags:["black"],size:{h:5,w:200,uom:"cm"}},
+    {item:"bottle",qty: 10,tags:["water","red"],size:{h:30,w:10,uom:"cm"}},
+    {item:"table",qty: 120,tags:["black","red"],size:{h:2,w:4,uom:"m"}},
+    {item:"phone",qty: 250,tags:["mobile"],size:{h:15,w:10,uom:"cm"}},
+]);
+
+db.inventory.find({ qty:{$lt: 200,$gt:100}});
+db.inventory.find({"size.uom": "cm"}});
+db.inventory.find({tags: {$all :["red","black"]}});
